@@ -1,0 +1,43 @@
+(tem position x 0 y 0)
+
+(tem direction x 0 y -1)
+
+(mac zapcoord (name f)
+  `(++ (POS ',name) (,f (DIR ',name))))
+
+(def checkbounds (v max)
+  (check v [< -1 _ max] (ret 'impossible-move)))
+
+(def move (f w h)
+  (checkbounds (zapcoord x f) w)
+  (checkbounds (zapcoord y f) h))
+
+(def turn (n)
+  (swap DIR!x DIR!y)
+  (zap (if (pint n) DIR!x DIR!y) inv))
+
+(def run-simulation ((w h) (x y) cmds)
+  (bind POS (make position x x y y)
+    (bind DIR (make direction)
+      (ccc (fn (ret)
+        (each cmd cmds
+          (handle cmd w h))
+        (list POS!x POS!y))))))
+
+(set actions (list
+  (def quit args
+    (ret (list POS!x POS!y)))
+  (def forward (w h)
+    (move idfn w h))
+  (def backward (w h)
+    (move inv w h))
+  (def clockwise args
+    (turn +1))
+  (def counterclockwise args
+    (turn -1))))
+
+(def handle (cmd w h)
+  (eif action (nth (inc cmd) actions)
+              (ret 'illegal-command))
+              (action w h))
+
