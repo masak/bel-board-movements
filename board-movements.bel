@@ -1,43 +1,35 @@
-(tem position x 0 y 0)
-
-(tem direction x 0 y -1)
-
-(mac zapcoord (name f)
-  `(++ (POS ',name) (,f (DIR ',name))))
-
 (def checkbounds (v max)
   (check v [< -1 _ max] (ret 'impossible-move)))
 
-(def move (f w h)
-  (checkbounds (zapcoord x f) w)
-  (checkbounds (zapcoord y f) h))
+(mac actions args
+  (if (no (car args))
+      nil
+      `(append (list (fn () ,(caddr args)))
+               (actions ,@(cdddr args)))))
 
-(def turn (n)
-  (swap DIR!x DIR!y)
-  (zap (if (pint n) DIR!x DIR!y) inv))
+(mac withret body
+  (letu v
+    `(ccc (fn (,v)
+       (bind ret ,v
+         ,@body)))))
 
-(def run-simulation ((w h) (x y) cmds)
-  (bind POS (make position x x y y)
-    (bind DIR (make direction)
-      (ccc (fn (ret)
-        (each cmd cmds
-          (handle cmd w h))
-        (list POS!x POS!y))))))
-
-(set actions (list
-  (def quit args
-    (ret (list POS!x POS!y)))
-  (def forward (w h)
-    (move idfn w h))
-  (def backward (w h)
-    (move inv w h))
-  (def clockwise args
-    (turn +1))
-  (def counterclockwise args
-    (turn -1))))
-
-(def handle (cmd w h)
-  (eif action (nth (inc cmd) actions)
-              (ret 'illegal-command))
-              (action w h))
-
+(def run ((w h) (x y) cmds)
+  (withs (direction '(0 -1)
+          move (fn (f)
+                 (checkbounds (++ x (f (1 direction))) w)
+                 (checkbounds (++ y (f (2 direction))) h))
+          turn (fn (angle)
+                 (let new (* (apply buildnum direction) angle)
+                   (set direction (list (rpart new) (ipart new)))))
+          as (actions
+            (1 quit             (ret (list x y)))
+            (2 forward          (move idfn))
+            (3 backward         (move inv))
+            (4 clockwise        (turn 1i))
+            (5 counterclockwise (turn -1i))))
+    (withret
+      (each c cmds
+        (eif a (nth (inc cmd) as)
+               (ret 'illegal-command)
+               (a)))
+      (list x y))))
