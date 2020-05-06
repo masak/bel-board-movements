@@ -28,5 +28,5 @@
             (3 clockwise        (turn +i))
             (4 counterclockwise (turn -i))))
     (bindret
-      (map [eif a (get _ as) (ret 'illegal-command) (a)] cmds)
+      (map [aif (get _ as) ((cdr it)) (ret 'illegal-command)] cmds)
       (list x y))))
