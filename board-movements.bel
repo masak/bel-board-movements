@@ -1,5 +1,7 @@
 (def checkbounds (v max)
-  (check v [< -1 _ max] (ret 'impossible-move)))
+  (or (< -1 v max) (ret 'impossible-move)))
+
+(def cdddr (x) (cdr (cddr x)))
 
 (mac actions args
   (if (car args)
@@ -13,22 +15,20 @@
          ,@body)))))
 
 (def run ((w h) (x y) cmds)
-  (withs (direction '(0 -1)
+  (withs (direction -i
           move (fn (f)
-                 (checkbounds (++ x (f (1 direction))) w)
-                 (checkbounds (++ y (f (2 direction))) h))
+                 (checkbounds (++ x (f (rpart direction))) w)
+                 (checkbounds (++ y (f (ipart direction))) h))
           turn (fn (angle)
-                 (let new (* (apply buildnum direction) angle)
-                   (set direction (list (rpart new) (ipart new)))))
+                 (zap * direction angle))
           as (actions
             (0 quit             (ret (list x y)))
             (1 forward          (move idfn))
             (2 backward         (move inv))
-            (3 clockwise        (turn 1i))
-            (4 counterclockwise (turn -1i))))
+            (3 clockwise        (turn +i))
+            (4 counterclockwise (turn -i))))
     (bindret
-      (each c cmds
-        (eif a (nth (inc c) as)
-               (ret 'illegal-command)
-               (a)))
+      (map [eif a (nth (inc _) as)
+                  (ret 'illegal-command)
+                  (a)])
       (list x y))))
