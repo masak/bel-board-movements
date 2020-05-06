@@ -5,7 +5,7 @@
 
 (mac actions args
   (if (car args)
-      `(append (list (fn () ,(caddr args)))
+      `(append (list (cons ,(car args) (fn () ,(caddr args))))
                (actions ,@(cdddr args)))))
 
 (mac bindret body
@@ -28,7 +28,5 @@
             (3 clockwise        (turn +i))
             (4 counterclockwise (turn -i))))
     (bindret
-      (map [eif a (nth (inc _) as)
-                  (ret 'illegal-command)
-                  (a)])
+      (map [eif a (get _ as) (ret 'illegal-command) (a)] cmds)
       (list x y))))
