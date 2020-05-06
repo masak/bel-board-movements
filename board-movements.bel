@@ -28,7 +28,7 @@
             (4 counterclockwise (turn -1i))))
     (bindret
       (each c cmds
-        (eif a (nth (inc cmd) as)
+        (eif a (nth (inc c) as)
                (ret 'illegal-command)
                (a)))
       (list x y))))
