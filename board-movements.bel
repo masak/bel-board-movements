@@ -6,7 +6,7 @@
       `(append (list (fn () ,(caddr args)))
                (actions ,@(cdddr args)))))
 
-(mac withret body
+(mac bindret body
   (letu v
     `(ccc (fn (,v)
        (bind ret ,v
@@ -26,7 +26,7 @@
             (2 backward         (move inv))
             (3 clockwise        (turn 1i))
             (4 counterclockwise (turn -1i))))
-    (withret
+    (bindret
       (each c cmds
         (eif a (nth (inc cmd) as)
                (ret 'illegal-command)
