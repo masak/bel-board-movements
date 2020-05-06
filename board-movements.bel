@@ -22,11 +22,11 @@
                  (let new (* (apply buildnum direction) angle)
                    (set direction (list (rpart new) (ipart new)))))
           as (actions
-            (1 quit             (ret (list x y)))
-            (2 forward          (move idfn))
-            (3 backward         (move inv))
-            (4 clockwise        (turn 1i))
-            (5 counterclockwise (turn -1i))))
+            (0 quit             (ret (list x y)))
+            (1 forward          (move idfn))
+            (2 backward         (move inv))
+            (3 clockwise        (turn 1i))
+            (4 counterclockwise (turn -1i))))
     (withret
       (each c cmds
         (eif a (nth (inc cmd) as)
