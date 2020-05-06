@@ -2,8 +2,7 @@
   (check v [< -1 _ max] (ret 'impossible-move)))
 
 (mac actions args
-  (if (~car args)
-      nil
+  (if (car args)
       `(append (list (fn () ,(caddr args)))
                (actions ,@(cdddr args)))))
 
