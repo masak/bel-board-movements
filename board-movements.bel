@@ -3,11 +3,14 @@
 
 (tem robot pos 0 dir -i)
 
-(def coords (r)
-  (list (rpart r!pos) (ipart r!pos)))
+(def x (r)
+  (rpart r!pos))
+
+(def y (r)
+  (ipart r!pos))
 
 (def quit (r)
-  (ret (coords r)))
+  (ret (list (x r) (y r))))
 
 (def move (r f)
   (zap + r!pos (f r!dir)))
@@ -44,12 +47,12 @@
   (bindret
     (let r (make robot pos (+ x (* +i y)))
       (map [runcmd r w h _] cmds)
-      (coords r))))
+      (list (x r) (y r)))))
 
 (def runcmd (r w h cmd)
   (aif (get cmd actions)
        (let action (cdr it)
          (action r)
-         (checkbounds r!x w)
-         (checkbounds r!y h))
+         (checkbounds (x r) w)
+         (checkbounds (y r) h))
        (ret 'illegal-command)))
