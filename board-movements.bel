@@ -1,19 +1,20 @@
 (def checkbounds (v max)
   (or (<= 0 v (- max 1)) (ret 'impossible-move)))
 
-(tem robot pos 0 dir -i)
+(mac zap-as-complex (op (x y) args)
+  (letu v
+    `(let ,v (op (+ x (* +i y)) ,@args)
+       (set ,x (rpart ,v))
+       (set ,y (ipart ,v)))))
 
-(def x (r)
-  (rpart r!pos))
-
-(def y (r)
-  (ipart r!pos))
+(tem robot x 0 y 0 dx 0 dy -1)
 
 (def quit (r)
-  (ret (list (x r) (y r))))
+  (ret (list r!x r!y)))
 
 (def move (r f)
-  (zap + r!pos (f r!dir)))
+  (zap + r!x (f r!dx))
+  (zap + r!y (f r!dy)))
 
 (def forward (r)
   (move r idfn))
@@ -22,7 +23,7 @@
   (move r inv))
 
 (def turn (r angle)
-  (zap * r!dir angle))
+  (zap-as-complex * (r!dx r!dy) angle))
 
 (def turncw (r)
   (turn r +i))
@@ -47,7 +48,7 @@
   (bindret
     (let r (make robot pos (+ x (* +i y)))
       (map [runcmd r w h _] cmds)
-      (list (x r) (y r)))))
+      (list r!x r!y))))
 
 (def runcmd (r w h cmd)
   (aif (get cmd actions)
