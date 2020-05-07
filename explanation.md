@@ -1,9 +1,9 @@
 ```
 (def checkbounds (v max)
-  (or (< -1 v max) (ret 'impossible-move)))
+  (or (<= 0 v (- max 1)) (ret 'impossible-move)))
 ```
 
-"If `v` isn't (strictly) between -1 and `max`, return `'impossible-move`."
+"If `v` isn't between 0 and `max - 1` (inclusive), return `'impossible-move`."
 
 Note that `ret` isn't defined by Bel; it needs to be in dynamic scope for this
 function to work. Fortunately, in the two callsites, it is.
@@ -104,7 +104,7 @@ takes an optional second argument which means "increase by how much". We end up
 sending it +1, 0, or -1, all of which are fine.
 
 The `f` transform ends up being either `idfn` (identity transform) or `inv`
-(negation), depending on if we move forwards or backwards, respectively.
+(negation), depending if we want to move forwards, or backwards.
 
 ```
           turn (fn (angle)
@@ -125,8 +125,11 @@ Depending on the value of `angle`, `direction` will take on these values:
 * `angle -i`: `-i`, `-1`, `+i`, `+1`, `-i`, `-1`, `+i`, `+1`...
 
 If we think of the complex numbers as "two-dimensional numbers", then `-i`
-corresponds to `(0, -1)`. So it's not much of an abuse to use complex numbers
-as vectors.
+corresponds to `(0, -1)`. So it's not much of an abuse to [use complex numbers
+as vectors](https://en.wikipedia.org/wiki/Complex_plane).
+
+There's some
+[very pretty group theory](https://en.wikipedia.org/wiki/Cyclic_group) here.
 
 ```
           as (actions
