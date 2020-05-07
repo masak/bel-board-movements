@@ -1,12 +1,38 @@
 (def checkbounds (v max)
   (or (<= 0 v (- max 1)) (ret 'impossible-move)))
 
-(def cdddr (x) (cdr (cddr x)))
+(tem robot pos 0 dir -i)
 
-(mac actions args
-  (if (car args)
-      `(append (list (cons ,(car args) (fn () ,(caddr args))))
-               (actions ,@(cdddr args)))))
+(def coords (r)
+  (list (rpart r!pos) (ipart r!pos)))
+
+(def quit (r)
+  (ret (coords r)))
+
+(def move (r f)
+  (zap + r!pos (f r!dir)))
+
+(def forward (r)
+  (move r idfn))
+
+(def backward (r)
+  (move r inv))
+
+(def turn (r angle)
+  (zap * r!dir angle))
+
+(def turncw (r)
+  (turn r +i))
+
+(def turnccw (r)
+  (turn r -i))
+
+(set actions `(
+  (0 . ,quit)
+  (1 . ,forward)
+  (2 . ,backward)
+  (3 . ,turncw)
+  (4 . ,turnccw)))
 
 (mac bindret body
   (letu v
@@ -15,23 +41,15 @@
          ,@body)))))
 
 (def run ((w h) (x y) cmds)
-  (withs (direction -i
-          move (fn (f)
-                 (checkbounds (++ x (f (rpart direction))) w)
-                 (checkbounds (++ y (f (ipart direction))) h))
-          turn (fn (angle)
-                 (zap * direction angle))
-          as (actions
-            (0 quit             (ret (list x y)))
-            (1 forward          (move idfn))
-            (2 backward         (move inv))
-            (3 clockwise        (turn +i))
-            (4 counterclockwise (turn -i)))
-          handle (fn (cmd)
-                   (aif (get cmd as)
-                        (let action (cdr it)
-                          (action))
-                        (ret 'illegal-command))))
-    (bindret
-      (map handle cmds)
-      (list x y))))
+  (bindret
+    (let r (make robot pos (+ x (* +i y)))
+      (map [runcmd r w h _] cmds)
+      (coords r))))
+
+(def runcmd (r w h cmd)
+  (aif (get cmd actions)
+       (let action (cdr it)
+         (action r)
+         (checkbounds r!x w)
+         (checkbounds r!y h))
+       (ret 'illegal-command)))
