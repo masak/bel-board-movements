@@ -1,5 +1,5 @@
 (def checkbounds (v max)
-  (or (< -1 v max) (ret 'impossible-move)))
+  (or (<= 0 v (- max 1)) (ret 'impossible-move)))
 
 (def cdddr (x) (cdr (cddr x)))
 
