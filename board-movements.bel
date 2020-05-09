@@ -3,9 +3,13 @@
 
 (mac zap-as-complex (op (x y) args)
   (letu v
-    `(let ,v (op (+ x (* +i y)) ,@args)
-       (set ,x (rpart ,v))
-       (set ,y (ipart ,v)))))
+    `(zap (fn (x)
+            (zap (fn (y)
+                   (set ,v ((op (+ x (* +i y)) ,@args))
+                   (ipart ,v))
+                 ,y)
+            (rpart ,v)
+          ,x))))
 
 (tem robot x 0 y 0 dx 0 dy -1)
 
