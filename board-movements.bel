@@ -1,16 +1,21 @@
 (tem robot x 0 y 0 dx 0 dy -1)
 
-(def quit (r)
+(set actions nil)
+
+(mac defaction (cmd name parms . body)
+  `(push (cmd . (fn ,parms ,@body)) actions))
+
+(defaction 0 quit (r)
   (throw (list r!x r!y)))
 
 (def move (r f)
   (zap + r!x (f r!dx))
   (zap + r!y (f r!dy)))
 
-(def forward (r)
+(defaction 1 forward (r)
   (move r idfn))
 
-(def backward (r)
+(defaction 2 backward (r)
   (move r inv))
 
 (mac zap-as-complex (op (x y) . args)
@@ -26,18 +31,11 @@
 (def turn (r angle)
   (zap-as-complex * (r!dx r!dy) angle))
 
-(def turncw (r)
+(defaction 3 turncw (r)
   (turn r +i))
 
-(def turnccw (r)
+(defaction 4 turnccw (r)
   (turn r -i))
-
-(set actions `(
-  (0 . ,quit)
-  (1 . ,forward)
-  (2 . ,backward)
-  (3 . ,turncw)
-  (4 . ,turnccw)))
 
 (def checkbounds (v max)
   (or (<= 0 v (- max 1))
