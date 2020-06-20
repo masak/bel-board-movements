@@ -45,7 +45,7 @@
 
 (def run ((w h) (x y) cmds)
   (catch
-    (let r (make robot pos (+ x (* +i y)))
+    (let r (make robot x x y y)
       (map [runcmd r w h _] cmds)
       (list r!x r!y))))
 
