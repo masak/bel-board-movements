@@ -1,17 +1,3 @@
-(def checkbounds (v max)
-  (or (<= 0 v (- max 1))
-      (throw 'impossible-move)))
-
-(mac zap-as-complex (op (x y) . args)
-  (letu v
-    `(zap (fn (x)
-            (zap (fn (y)
-                   (set ,v ((op (+ x (* +i y)) ,@args))
-                   (ipart ,v))
-                 ,y)
-            (rpart ,v)
-          ,x))))
-
 (tem robot x 0 y 0 dx 0 dy -1)
 
 (def quit (r)
@@ -26,6 +12,16 @@
 
 (def backward (r)
   (move r inv))
+
+(mac zap-as-complex (op (x y) . args)
+  (letu v
+    `(zap (fn (x)
+            (zap (fn (y)
+                   (set ,v ((op (+ x (* +i y)) ,@args))
+                   (ipart ,v))
+                 ,y)
+            (rpart ,v)
+          ,x))))
 
 (def turn (r angle)
   (zap-as-complex * (r!dx r!dy) angle))
@@ -43,11 +39,9 @@
   (3 . ,turncw)
   (4 . ,turnccw)))
 
-(def run ((w h) (x y) cmds)
-  (catch
-    (let r (make robot x x y y)
-      (map [runcmd r w h _] cmds)
-      (list r!x r!y))))
+(def checkbounds (v max)
+  (or (<= 0 v (- max 1))
+      (throw 'impossible-move)))
 
 (def runcmd (r w h cmd)
   (aif (get cmd actions)
@@ -56,3 +50,9 @@
          (checkbounds r!x w)
          (checkbounds r!y h))
        (throw 'illegal-command)))
+
+(def run ((w h) (x y) cmds)
+  (catch
+    (let r (make robot x x y y)
+      (map [runcmd r w h _] cmds)
+      (list r!x r!y))))
