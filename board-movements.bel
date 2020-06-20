@@ -1,6 +1,6 @@
 (def checkbounds (v max)
   (or (<= 0 v (- max 1))
-      (ret 'impossible-move)))
+      (throw 'impossible-move)))
 
 (mac zap-as-complex (op (x y) . args)
   (letu v
@@ -15,7 +15,7 @@
 (tem robot x 0 y 0 dx 0 dy -1)
 
 (def quit (r)
-  (ret (list r!x r!y)))
+  (throw (list r!x r!y)))
 
 (def move (r f)
   (zap + r!x (f r!dx))
@@ -43,14 +43,8 @@
   (3 . ,turncw)
   (4 . ,turnccw)))
 
-(mac bindret body
-  (letu v
-    `(ccc (fn (,v)
-       (bind ret ,v
-         ,@body)))))
-
 (def run ((w h) (x y) cmds)
-  (bindret
+  (catch
     (let r (make robot pos (+ x (* +i y)))
       (map [runcmd r w h _] cmds)
       (list r!x r!y))))
@@ -61,4 +55,4 @@
          (action r)
          (checkbounds (x r) w)
          (checkbounds (y r) h))
-       (ret 'illegal-command)))
+       (throw 'illegal-command)))
