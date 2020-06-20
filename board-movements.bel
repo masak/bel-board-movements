@@ -53,6 +53,6 @@
   (aif (get cmd actions)
        (let action (cdr it)
          (action r)
-         (checkbounds (x r) w)
-         (checkbounds (y r) h))
+         (checkbounds r!x w)
+         (checkbounds r!y h))
        (throw 'illegal-command)))
