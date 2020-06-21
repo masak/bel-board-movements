@@ -12,7 +12,7 @@
 
 ;; ...and then to define a macro that will add things to this global.
 ;; Here, we want to define five actions that control the robot.
-(mac defaction (cmd name parms . body)
+(mac action (cmd name parms . body)
   `(push (cmd . (fn ,parms ,@body)) actions))
 
 ;; The first action is a bit of an exception. It aborts the run early
@@ -20,7 +20,7 @@
 ;; `throw` action, a non-local command which will find us back in
 ;; `run`, the top-level function. The list passed to `throw`
 ;; conveniently serves as a return value.
-(defaction 0 quit (r)
+(action 0 quit (r)
   (throw (list r!x r!y)))
 
 ;; This helper function makes it easy to talk about moving the robot
@@ -32,10 +32,10 @@
   (zap op r!x r!dx)
   (zap op r!y r!dy))
 
-(defaction 1 forward (r)
+(action 1 forward (r)
   (move + r))
 
-(defaction 2 backward (r)
+(action 2 backward (r)
   (move - r))
 
 ;; Changing the robot's direction comes down to cycling through the
@@ -44,11 +44,11 @@
 ;; many ways to do this, but the below is perhaps the simplest -- the
 ;; `swap` makes sure to juggle the 1 between the x and y coordinates,
 ;; and the `zap inv` switches the sign at the appropriate moments.
-(defaction 3 turncw (r)
+(action 3 turncw (r)
   (swap r!dx r!dy)
   (zap inv r!dx))
 
-(defaction 4 turnccw (r)
+(action 4 turnccw (r)
   (swap r!dx r!dy)
   (zap inv r!dy))
 
