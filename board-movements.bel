@@ -13,7 +13,7 @@
 ;; ...and then to define a macro that will add things to this global.
 ;; Here, we want to define five actions that control the robot.
 (mac action (cmd name parms . body)
-  `(push (cmd . (fn ,parms ,@body)) actions))
+  `(push (,cmd . (fn ,parms ,@body)) actions))
 
 ;; The first action is a bit of an exception. It aborts the run early
 ;; so that no more commands are executed. This is achieved through a
