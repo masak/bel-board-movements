@@ -41,16 +41,22 @@
 ;; Changing the robot's direction comes down to cycling through the
 ;; four directions (0, -1), (1, 0), (0, 1), and (-1, 0); forwards in
 ;; this list if we're going clockwise, otherwise backwards. There are
-;; many ways to do this, but the below is perhaps the simplest -- the
-;; `swap` makes sure to juggle the 1 between the x and y coordinates,
-;; and the `zap inv` switches the sign at the appropriate moments.
+;; many ways to do this, and I've gone through many of them, thinking
+;; each one is simpler than the last one I tried. This one feels dead
+;; simple: compute the new value, and then call `set` to update the
+;; object. (This could be written more elegantly with a "batch set"
+;; operation.)
 (action 3 turncw (r)
-  (swap r!dx r!dy)
-  (zap inv r!dx))
+  (with (new-dx (inv r!dy)
+         new-dy r!dx)
+    (set r!dx new-dx
+         r!dy new-dy)))
 
 (action 4 turnccw (r)
-  (swap r!dx r!dy)
-  (zap inv r!dy))
+  (with (new-dx r!dy
+         new-dy (inv r!dx))
+    (set r!dx new-dx
+         r!dy new-dy)))
 
 ;; If the robot ever leaves its designated rectangle, we throw an
 ;; exception and the run aborts early so that no more commands are
