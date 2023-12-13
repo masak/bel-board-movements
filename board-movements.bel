@@ -47,14 +47,14 @@
 ;; object. (This could be written more elegantly with a "batch set"
 ;; operation.)
 (action 3 turncw (r)
-  (with (new-dx (inv r!dy)
+  (with (new-dx (- r!dy)
          new-dy r!dx)
     (set r!dx new-dx
          r!dy new-dy)))
 
 (action 4 turnccw (r)
   (with (new-dx r!dy
-         new-dy (inv r!dx))
+         new-dy (- r!dx))
     (set r!dx new-dx
          r!dy new-dy)))
 
@@ -64,8 +64,8 @@
 ;; technically it's only necessary to check after forward and
 ;; backwards moves.
 (def checkbounds (v max)
-  (or (<= 0 v (- max 1))
-      (throw 'impossible-move)))
+  (unless (<= 0 v (- max 1))
+    (throw 'impossible-move)))
 
 ;; To run an individual command, we look up the `cmd` number in
 ;; our `actions` association list. If we find it there, we run its
